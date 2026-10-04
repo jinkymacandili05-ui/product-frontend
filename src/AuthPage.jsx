@@ -10,15 +10,41 @@ export default function AuthPage({ onAuth }) {
  
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
  
-  const switchMode = () => {
+const switchMode = () => {
     setMode(isRegister ? "login" : "register");
+    setForm({ username: "", password: "" });
     setError("");
   };
  
   const submit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (isRegister && form.password.length < 6) {
+      setError(
+        "Password must be at least 6 characters long."
+      );
+      return;
+    }
+    
     setBusy(true);
+
+    try {
+      if (isRegister) {
+        await api.post("/api/auth/register", form);
+      }
+
+      const { data } = await api.post("/api/auth/login", {
+        username: form.username,
+        password: form.password,
+      });
+
+      saveTokens(data);
+      onAuth(data.user);
+      } catch (err) {
+        console.error("Auth error:", err);
+      }
+
     try {
       if (isRegister) await api.post("/api/auth/register", form);
       const { data } = await api.post("/api/auth/login", {
@@ -28,16 +54,25 @@ export default function AuthPage({ onAuth }) {
       saveTokens(data);
       onAuth(data.user);
     } catch (err) {
-      console.error("Auth error:", err);
-      if (!err.response) {
-        setError("Can't reach the server. Check that the API is running and VITE_API_URL is correct.");
-      } else {
-        setError(err.response.data?.error || `Server error (${err.response.status}).`);
-      }
+    console.error("Auth error:", err);
+
+    if (!err.response) {
+      setError(
+        "Can't reach the server. Check that the API is running and VITE_API_URL is correct."
+      );
+    } else {
+      const message =
+        err.response.data?.error ||
+        err.response.data?.message ||
+        `Server error (${err.response.status}).`;
+
+      setError(message);
+    }
     } finally {
       setBusy(false);
     }
   };
+
  
   return (
     <div className="auth-wrap">

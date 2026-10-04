@@ -129,10 +129,16 @@ textarea { resize: vertical; }
 .link:hover { color: var(--text); }
  
 .alert {
-  background: var(--danger-bg); color: var(--danger);
-  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
-  padding: 0.65rem 0.9rem; border-radius: 10px; font-size: 0.9rem;
+  background: #3b1d20;
+  color: #ff6b6b;
+  border: 1px solid #7f3038;
+  border-radius: 7px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  line-height: 1.4;
 }
+
  
 /* ---------- Auth ---------- */
 .auth-wrap { min-height: calc(100vh - 62px); display: grid; place-items: center; padding: 1rem; }
